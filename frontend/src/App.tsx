@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Web3Provider } from './contexts/Web3Context';
 import Layout from './components/Layout';
