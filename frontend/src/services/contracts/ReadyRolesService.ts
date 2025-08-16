@@ -4,10 +4,9 @@ import { dummyUsers } from '../../data/dummyData';
 
 export class ReadyRolesService {
   private contract: ethers.Contract;
-  private signer: ethers.JsonRpcSigner;
+
 
   constructor(contractAddress: string, signer: ethers.JsonRpcSigner) {
-    this.signer = signer;
     this.contract = new ethers.Contract(contractAddress, [
       'function registerPractitioner(string profileURI) external',
       'function approvePractitioner(address practitioner) external',

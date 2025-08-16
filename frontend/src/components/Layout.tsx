@@ -140,8 +140,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                   &copy; 2024 Ready Lawyer. All rights reserved.
                 </p>
                 <p className="text-gray-400 text-xs mt-1">
-                  Built on Avalanche C-Chain for secure legal services
-                </p>
+              Built on Avalanche C-Chain for secure legal services
+            </p>
               </div>
               <div className="mt-4 md:mt-0 flex items-center space-x-4">
                 <div className="flex items-center space-x-2 text-xs text-gray-400">

@@ -1,13 +1,12 @@
 import { ethers } from 'ethers';
-import { User, LawyerProfile, CaseSignal } from '../../types';
+import { User } from '../../types';
 import { dummyUsers } from '../../data/dummyData';
 
 export class ReadyListingsService {
   private contract: ethers.Contract;
-  private signer: ethers.JsonRpcSigner;
+
 
   constructor(contractAddress: string, signer: ethers.JsonRpcSigner) {
-    this.signer = signer;
     this.contract = new ethers.Contract(contractAddress, [
       'function createListing(string profileURI, uint256 hourlyRate, string[] tags) external',
       'function updateListing(string profileURI, uint256 hourlyRate, string[] tags) external',
@@ -148,7 +147,7 @@ export class ReadyListingsService {
   }
 
   // Get lawyers by specialization (tags)
-  async getLawyersBySpecialization(specialization: string): Promise<User[]> {
+  async getLawyersBySpecialization(_specialization: string): Promise<User[]> {
     const listings = await this.getAllListings();
     // In production, this would filter by actual contract tags
     return listings.filter(user => 
@@ -158,7 +157,7 @@ export class ReadyListingsService {
   }
 
   // Get lawyers by hourly rate range
-  async getLawyersByRateRange(minRate: number, maxRate: number): Promise<User[]> {
+  async getLawyersByRateRange(_minRate: number, _maxRate: number): Promise<User[]> {
     const listings = await this.getAllListings();
     // In production, this would filter by actual contract hourly rates
     return listings.filter(user => 
@@ -187,7 +186,7 @@ export class ReadyListingsService {
   }
 
   // Get lawyers by location
-  async getLawyersByLocation(location: string): Promise<User[]> {
+  async getLawyersByLocation(_location: string): Promise<User[]> {
     const listings = await this.getAllListings();
     // In production, this would filter by actual location data
     return listings.filter(user => 

@@ -4,10 +4,9 @@ import { dummyDocuments } from '../../data/dummyData';
 
 export class ReadyDocsService {
   private contract: ethers.Contract;
-  private signer: ethers.JsonRpcSigner;
+
 
   constructor(contractAddress: string, signer: ethers.JsonRpcSigner) {
-    this.signer = signer;
     this.contract = new ethers.Contract(contractAddress, [
       'function createDocument(bytes32 docId, uint8 docType, string caseId, string initialCid) external',
       'function addVersion(bytes32 docId, string cid) external',

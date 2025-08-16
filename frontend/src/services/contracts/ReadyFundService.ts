@@ -1,13 +1,12 @@
 import { ethers } from 'ethers';
-import { FundraisingCampaign, CampaignStatus, User } from '../../types';
-import { dummyCampaigns, dummyUsers } from '../../data/dummyData';
+import { FundraisingCampaign, CampaignStatus } from '../../types';
+import { dummyCampaigns } from '../../data/dummyData';
 
 export class ReadyFundService {
   private contract: ethers.Contract;
-  private signer: ethers.JsonRpcSigner;
+
 
   constructor(contractAddress: string, signer: ethers.JsonRpcSigner) {
-    this.signer = signer;
     this.contract = new ethers.Contract(contractAddress, [
       'function createCampaign(string id, address beneficiary, bool beneficiaryIsLawyer, address token, uint256 goalAmount, uint256 deadline) external',
       'function contribute(string id) external payable',

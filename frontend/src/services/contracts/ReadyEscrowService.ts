@@ -4,10 +4,9 @@ import { dummyCases } from '../../data/dummyData';
 
 export class ReadyEscrowService {
   private contract: ethers.Contract;
-  private signer: ethers.JsonRpcSigner;
+
 
   constructor(contractAddress: string, signer: ethers.JsonRpcSigner) {
-    this.signer = signer;
     this.contract = new ethers.Contract(contractAddress, [
       'function createCase(string caseId, address lawyer, address token, uint256 amount, uint256 deadline) external',
       'function fundCase(string caseId) external payable',
