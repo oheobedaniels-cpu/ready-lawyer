@@ -187,18 +187,20 @@ export const getErrorMessage = (error: any): string => {
 };
 
 // Contract Interaction Helpers
-export const waitForTransaction = async (tx: ethers.ContractTransaction): Promise<ethers.ContractReceipt> => {
+export const waitForTransaction = async (tx: ethers.ContractTransactionResponse): Promise<ethers.ContractTransactionReceipt | null> => {
   return await tx.wait();
 };
 
-export const estimateGas = async (tx: ethers.ContractTransaction): Promise<bigint> => {
-  return await tx.estimateGas();
+export const estimateGas = async (_tx: ethers.ContractTransactionResponse): Promise<bigint> => {
+  // Note: estimateGas is not available on ContractTransactionResponse in ethers v6
+  // This would need to be called before the transaction is sent
+  throw new Error('estimateGas must be called before sending the transaction');
 };
 
-export const getTransactionStatus = async (tx: ethers.ContractTransaction): Promise<'pending' | 'confirmed' | 'failed'> => {
+export const getTransactionStatus = async (tx: ethers.ContractTransactionResponse): Promise<'pending' | 'confirmed' | 'failed'> => {
   try {
     const receipt = await tx.wait();
-    return receipt.status === 1 ? 'confirmed' : 'failed';
+    return receipt && receipt.status === 1 ? 'confirmed' : 'failed';
   } catch {
     return 'pending';
   }

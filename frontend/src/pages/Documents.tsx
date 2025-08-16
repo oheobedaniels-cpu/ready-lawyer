@@ -325,7 +325,7 @@ const Documents: React.FC = () => {
               <div>
                 <span className="font-medium text-gray-700">Tags:</span>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedDocument.tags.map((tag, index) => (
+                  {selectedDocument.tags.map((tag: string, index: number) => (
                     <span
                       key={index}
                       className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"

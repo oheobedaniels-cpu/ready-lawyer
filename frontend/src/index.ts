@@ -3,6 +3,14 @@ export { default as App } from './App';
 
 // Components
 export { default as Layout } from './components/Layout';
+export { 
+  Header, 
+  Navigation, 
+  UserProfile, 
+  NotificationSystem, 
+  useNotifications,
+  NavbarDemo 
+} from './components';
 
 // Pages
 export { default as Home } from './pages/Home';

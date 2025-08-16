@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState, ReactNode } from
 import { ethers } from 'ethers';
 import toast from 'react-hot-toast';
 import { contractService } from '../services/ContractService';
-import { CONTRACT_ADDRESSES } from '../types';
+
 
 interface Web3ContextType {
   account: string | null;

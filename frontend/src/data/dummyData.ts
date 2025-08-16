@@ -3,11 +3,7 @@ import {
   LegalDocument, 
   LegalCase, 
   FundraisingCampaign, 
-  LawyerProfile, 
-  CaseSignal, 
-  DashboardStats,
-  Notification,
-  ActivityItem
+  DashboardStats
 } from '../types';
 
 // Dummy Users

@@ -3,7 +3,7 @@ import { useWeb3 } from '../contexts/Web3Context';
 import { Scale, UserCheck, Shield, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 
 const Verification: React.FC = () => {
-  const { isConnected, account } = useWeb3();
+  const { isConnected } = useWeb3();
   const [activeTab, setActiveTab] = useState<'lawyer' | 'judge'>('lawyer');
   const [profileURI, setProfileURI] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);

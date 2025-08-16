@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
-import { Users, Plus, Search, Star, Clock, MapPin, DollarSign, Tag, X } from 'lucide-react';
+import { Users, Plus, Search, Star, DollarSign, X } from 'lucide-react';
 
 const Marketplace: React.FC = () => {
   const { isConnected } = useWeb3();

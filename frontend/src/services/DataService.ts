@@ -3,13 +3,10 @@ import {
   LegalDocument, 
   LegalCase, 
   FundraisingCampaign, 
-  CaseSignal, 
   DashboardStats,
-  Notification,
-  ActivityItem,
   CaseStatus,
   CampaignStatus,
-  PractitionerStatus
+  ActivityItem
 } from '../types';
 import { 
   dummyUsers, 

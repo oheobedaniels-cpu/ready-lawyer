@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
-import { Building2, Plus, TrendingUp, Clock, CheckCircle, XCircle, DollarSign } from 'lucide-react';
+import { Building2, Plus, Clock, CheckCircle, XCircle, DollarSign } from 'lucide-react';
 
 const Fundraising: React.FC = () => {
   const { isConnected } = useWeb3();
