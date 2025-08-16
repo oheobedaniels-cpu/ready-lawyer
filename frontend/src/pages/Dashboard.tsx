@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWeb3 } from '../contexts/Web3Context';
 import { 
   FileText, 
@@ -12,10 +12,35 @@ import {
   DollarSign,
   Calendar
 } from 'lucide-react';
-import { dummyDashboardStats } from '../data/dummyData';
+import { dataService } from '../services';
+import { DashboardStats, LegalCase } from '../types';
 
 const Dashboard: React.FC = () => {
-  const { isConnected } = useWeb3();
+  const { isConnected, contractsInitialized } = useWeb3();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [upcomingDeadlines, setUpcomingDeadlines] = useState<LegalCase[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      if (isConnected) {
+        try {
+          const [dashboardStats, deadlines] = await Promise.all([
+            dataService.getDashboardStats(),
+            dataService.getUpcomingDeadlines(5)
+          ]);
+          setStats(dashboardStats);
+          setUpcomingDeadlines(deadlines);
+        } catch (error) {
+          console.error('Failed to load dashboard data:', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadDashboardData();
+  }, [isConnected]);
 
   if (!isConnected) {
     return (
@@ -38,7 +63,16 @@ const Dashboard: React.FC = () => {
     );
   }
 
-  const stats = dummyDashboardStats;
+  if (!stats || loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   const StatCard = ({ 
     title, 
@@ -127,6 +161,12 @@ const Dashboard: React.FC = () => {
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <span className="text-sm font-medium text-green-700">Connected to Avalanche</span>
           </div>
+          {contractsInitialized && (
+            <div className="flex items-center space-x-2 px-3 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span className="text-sm font-medium text-blue-700">Smart Contracts Ready</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -198,32 +238,43 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Deadlines</h2>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-5 w-5 text-orange-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Contract Review</p>
-                  <p className="text-xs text-gray-600">Tech Startup Case</p>
-                </div>
+            {upcomingDeadlines.length > 0 ? (
+              upcomingDeadlines.map((legalCase) => {
+                const daysUntilDeadline = Math.ceil((legalCase.deadline - Date.now()) / (1000 * 60 * 60 * 24));
+                const isUrgent = daysUntilDeadline <= 3;
+                const bgColor = isUrgent ? 'bg-orange-50 border-orange-200' : 'bg-blue-50 border-blue-200';
+                const textColor = isUrgent ? 'text-orange-600' : 'text-blue-600';
+                
+                return (
+                  <div key={legalCase.id} className={`flex items-center justify-between p-3 ${bgColor} rounded-lg`}>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className={`h-5 w-5 ${isUrgent ? 'text-orange-500' : 'text-blue-500'}`} />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{legalCase.title}</p>
+                        <p className="text-xs text-gray-600">{legalCase.category}</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-sm font-medium ${textColor}`}>
+                        Due in {daysUntilDeadline} {daysUntilDeadline === 1 ? 'day' : 'days'}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(legalCase.deadline).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                <Calendar className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                <p>No upcoming deadlines</p>
               </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-orange-600">Due in 3 days</p>
-                <p className="text-xs text-gray-500">Dec 15, 2024</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Calendar className="h-5 w-5 text-blue-500" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Evidence Submission</p>
-                  <p className="text-xs text-gray-600">Financial Fraud Case</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-medium text-blue-600">Due in 1 week</p>
-                <p className="text-xs text-gray-500">Dec 20, 2024</p>
-              </div>
-            </div>
+            )}
           </div>
           <button className="w-full mt-4 p-2 text-sm text-primary-600 hover:text-primary-700 font-medium">
             View All Deadlines

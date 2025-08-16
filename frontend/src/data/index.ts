@@ -21,3 +21,4 @@ export type {
   Notification,
   ActivityItem
 } from '../types';
+

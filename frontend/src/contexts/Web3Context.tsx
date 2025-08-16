@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { ethers } from 'ethers';
 import toast from 'react-hot-toast';
+import { contractService } from '../services/ContractService';
+import { CONTRACT_ADDRESSES } from '../types';
 
 interface Web3ContextType {
   account: string | null;
@@ -8,9 +10,11 @@ interface Web3ContextType {
   signer: ethers.JsonRpcSigner | null;
   chainId: number | null;
   isConnected: boolean;
+  contractsInitialized: boolean;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => void;
   switchNetwork: () => Promise<void>;
+  initializeContracts: () => Promise<void>;
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
@@ -33,6 +37,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
   const [signer, setSigner] = useState<ethers.JsonRpcSigner | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const [contractsInitialized, setContractsInitialized] = useState(false);
 
   // Avalanche C-Chain Network IDs
   const AVALANCHE_MAINNET = 43114;
@@ -68,6 +73,8 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
         await switchNetwork();
       } else {
         toast.success('Wallet connected successfully!');
+        // Initialize contracts after successful connection
+        await initializeContracts();
       }
 
     } catch (error) {
@@ -82,6 +89,8 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     setSigner(null);
     setChainId(null);
     setIsConnected(false);
+    setContractsInitialized(false);
+    contractService.clear();
     toast.success('Wallet disconnected');
   };
 
@@ -125,6 +134,23 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     }
   };
 
+  const initializeContracts = async () => {
+    if (!signer) {
+      console.warn('No signer available for contract initialization');
+      return;
+    }
+
+    try {
+      // Initialize contracts with current addresses
+      contractService.initialize(signer);
+      setContractsInitialized(true);
+      console.log('Contracts initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize contracts:', error);
+      toast.error('Failed to initialize smart contracts');
+    }
+  };
+
   useEffect(() => {
     const handleAccountsChanged = (accounts: string[]) => {
       if (accounts.length === 0) {
@@ -157,6 +183,8 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
             setSigner(signer);
             setChainId(Number(network.chainId));
             setIsConnected(true);
+            // Initialize contracts for existing connection
+            await initializeContracts();
           }
         } catch (error) {
           console.error('Error checking connection:', error);
@@ -180,9 +208,11 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     signer,
     chainId,
     isConnected,
+    contractsInitialized,
     connectWallet,
     disconnectWallet,
     switchNetwork,
+    initializeContracts,
   };
 
   return (
